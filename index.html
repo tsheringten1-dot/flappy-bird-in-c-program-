@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>John Doe | Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#0ea5e9', // Sky 500
+                        secondary: '#6366f1', // Indigo 500
+                        dark: '#0f172a', // Slate 900
+                        darker: '#020617', // Slate 950
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & Animations */
+        body {
+            background-color: #41425b39; /* Matches darker tailwind color */
+            color: #293363;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+
+        .project-card {
+            transition: all 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px -10px rgba(14, 165, 233, 0.3);
+        }
+
+        .nav-link.active {
+            color: #0ea5e9;
+        }
+
+        .filter-btn.active {
+            background-color: #691769;
+            color: white;
+            border-color: #094d6c;
+        }
+
+        /* Hide scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #152b4a; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569; 
+        }
+
+        /* Toast notification */
+        #toast {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            transform: translateY(100%);
+            opacity: 0;
+        }
+        #toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 bg-dark/80 backdrop-blur-md border-b border-slate-800 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-heading font-bold text-xl">
+                        JD
+                    </div>
+                    <span class="font-heading font-bold text-xl tracking-tight text-white">John<span class="text-primary">Doe</span></span>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#home" class="nav-link text-slate-300 hover:text-primary transition-colors text-sm font-medium">Home</a>
+                    <a href="#about" class="nav-link text-slate-300 hover:text-primary transition-colors text-sm font-medium">About</a>
+                    <a href="#skills" class="nav-link text-slate-300 hover:text-primary transition-colors text-sm font-medium">Skills</a>
+                    <a href="#projects" class="nav-link text-slate-300 hover:text-primary transition-colors text-sm font-medium">Projects</a>
+                    <a href="#contact" class="px-5 py-2.5 rounded-full bg-primary/10 text-primary hover:bg-primary hover:text-white transition-all text-sm font-medium border border-primary/20 hover:border-primary">Let's Talk</a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Panel -->
+        <div id="mobile-menu" class="md:hidden hidden bg-dark border-b border-slate-800 absolute w-full left-0 top-20 shadow-xl">
+            <div class="px-4 pt-2 pb-6 space-y-1 flex flex-col">
+                <a href="#home" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Home</a>
+                <a href="#about" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">About</a>
+                <a href="#skills" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Skills</a>
+                <a href="#projects" class="mobile-link block px-3 py-3 rounded-md text-base font-medium text-slate-300 hover:text-white hover:bg-slate-800">Projects</a>
+                <a href="#contact" class="mobile-link block px-3 py-3 mt-4 rounded-md text-base font-medium bg-primary text-white text-center">Let's Talk</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+        <!-- Background decorative elements -->
+        <div class="absolute top-1/4 left-10 w-72 h-72 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-50"></div>
+        <div class="absolute bottom-1/4 right-10 w-96 h-96 bg-secondary/20 rounded-full mix-blend-screen filter blur-[100px] opacity-50"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div class="order-2 lg:order-1 flex flex-col items-center lg:items-start text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-800/50 border border-slate-700 text-sm text-primary mb-6">
+                        <span class="relative flex h-2 w-2">
+                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                          <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                        </span>
+                        Available for work
+                    </div>
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-heading font-bold tracking-tight mb-4">
+                        Hi, I'm <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">John Doe</span>
+                    </h1>
+                    <h2 class="text-2xl sm:text-3xl font-medium text-slate-300 mb-6 h-10">
+                        I am a <span id="typewriter" class="text-white font-heading typing-cursor"></span>
+                    </h2>
+                    <p class="text-slate-400 text-lg max-w-xl mb-8 leading-relaxed">
+                        I build exceptional digital experiences that are fast, accessible, visually appealing, and responsive. Let's turn your vision into reality.
+                    </p>
+                    <div class="flex flex-wrap gap-4 justify-center lg:justify-start">
+                        <a href="#projects" class="px-8 py-4 rounded-full bg-primary hover:bg-sky-400 text-white font-medium transition-all shadow-[0_0_20px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)] flex items-center gap-2">
+                            View Work <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                        </a>
+                        <a href="#contact" class="px-8 py-4 rounded-full bg-transparent border border-slate-700 hover:border-slate-500 text-white font-medium transition-all flex items-center gap-2">
+                            Contact Me
+                        </a>
+                    </div>
+                    
+                    <!-- Social Links -->
+                    <div class="flex gap-5 mt-10">
+                        <a href="#" class="text-slate-400 hover:text-primary transition-colors p-2 rounded-full hover:bg-slate-800"><i data-lucide="github" class="w-6 h-6"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-primary transition-colors p-2 rounded-full hover:bg-slate-800"><i data-lucide="linkedin" class="w-6 h-6"></i></a>
+                        <a href="#" class="text-slate-400 hover:text-primary transition-colors p-2 rounded-full hover:bg-slate-800"><i data-lucide="twitter" class="w-6 h-6"></i></a>
+                    </div>
+                </div>
+
+                <!-- Image/Visual -->
+                <div class="order-1 lg:order-2 flex justify-center lg:justify-end">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96">
+                        <!-- Abstract shape behind image -->
+                        <div class="absolute inset-0 bg-gradient-to-tr from-primary to-secondary rounded-full animate-pulse blur-2xl opacity-40"></div>
+                        <div class="absolute inset-4 bg-dark rounded-full z-10 border-2 border-slate-800 flex items-center justify-center overflow-hidden">
+                            <!-- Placeholder Profile Vector -->
+                            <svg class="w-full h-full text-slate-700 mt-10" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                        </div>
+                        
+                        <!-- Floating badges -->
+                        <div class="absolute top-10 -left-6 lg:-left-12 z-20 bg-slate-800/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-3 animate-[bounce_3s_infinite]">
+                            <div class="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
+                                <i data-lucide="code-2" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left hidden sm:block">
+                                <p class="text-xs text-slate-400">Experience</p>
+                                <p class="font-bold text-white text-sm">5+ Years</p>
+                            </div>
+                        </div>
+                        <div class="absolute bottom-10 -right-6 lg:-right-12 z-20 bg-slate-800/80 backdrop-blur-md px-4 py-3 rounded-2xl border border-slate-700 shadow-xl flex items-center gap-3 animate-[bounce_4s_infinite]">
+                            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            </div>
+                            <div class="text-left hidden sm:block">
+                                <p class="text-xs text-slate-400">Projects</p>
+                                <p class="font-bold text-white text-sm">50+ Completed</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 bg-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">About <span class="text-primary">Me</span></h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="relative w-full max-w-md aspect-square rounded-2xl overflow-hidden group">
+                        <!-- We use a gradient div as a placeholder for an image to ensure it looks beautiful -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900 group-hover:scale-105 transition-transform duration-500"></div>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center p-8 text-center border-4 border-slate-800 rounded-2xl m-2">
+                            <i data-lucide="laptop" class="w-24 h-24 text-slate-600 mb-4"></i>
+                            <p class="text-slate-500 font-medium">Your Awesome<br>Photo Here</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="lg:col-span-7 space-y-6">
+                    <h3 class="text-2xl font-heading font-semibold text-white">Designing with passion, coding with precision.</h3>
+                    <p class="text-slate-400 leading-relaxed text-lg">
+                        I am a passionate Full-Stack Developer with a keen eye for modern design. My journey in web development started back in 2018, and since then, I've had the privilege of building software for startups, agencies, and large corporations.
+                    </p>
+                    <p class="text-slate-400 leading-relaxed text-lg">
+                        My main focus these days is building accessible, inclusive products and digital experiences for a variety of clients. I thrive in environments where I can learn new technologies and apply them to solve real-world problems.
+                    </p>
+                    
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-6 pt-6">
+                        <div class="space-y-2">
+                            <p class="text-4xl font-heading font-bold text-primary">05+</p>
+                            <p class="text-sm text-slate-400 font-medium uppercase tracking-wider">Years Experience</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-4xl font-heading font-bold text-primary">50+</p>
+                            <p class="text-sm text-slate-400 font-medium uppercase tracking-wider">Projects Completed</p>
+                        </div>
+                        <div class="space-y-2">
+                            <p class="text-4xl font-heading font-bold text-primary">20+</p>
+                            <p class="text-sm text-slate-400 font-medium uppercase tracking-wider">Happy Clients</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pt-6">
+                        <a href="#" class="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-medium transition-colors border border-slate-700">
+                            <i data-lucide="download" class="w-4 h-4 text-primary"></i> Download Resume
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-24 bg-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">My <span class="text-primary">Skills</span></h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+                <p class="text-slate-400 max-w-2xl mx-auto mt-6">Here are the technologies I've been working with recently to build amazing digital experiences.</p>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Skill 1 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-500/10 transition-all">
+                        <i data-lucide="file-html" class="w-8 h-8 text-slate-400 group-hover:text-orange-500 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-orange-500 transition-colors">HTML5 & CSS3</h3>
+                </div>
+                <!-- Skill 2 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-yellow-400/10 transition-all">
+                        <i data-lucide="file-json" class="w-8 h-8 text-slate-400 group-hover:text-yellow-400 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-yellow-400 transition-colors">JavaScript (ES6+)</h3>
+                </div>
+                <!-- Skill 3 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-sky-400/10 transition-all">
+                        <i data-lucide="atom" class="w-8 h-8 text-slate-400 group-hover:text-sky-400 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-sky-400 transition-colors">React & Next.js</h3>
+                </div>
+                <!-- Skill 4 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-teal-400/10 transition-all">
+                        <i data-lucide="wind" class="w-8 h-8 text-slate-400 group-hover:text-teal-400 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-teal-400 transition-colors">Tailwind CSS</h3>
+                </div>
+                <!-- Skill 5 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-green-500/10 transition-all">
+                        <i data-lucide="server" class="w-8 h-8 text-slate-400 group-hover:text-green-500 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-green-500 transition-colors">Node.js & Express</h3>
+                </div>
+                <!-- Skill 6 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-500/10 transition-all">
+                        <i data-lucide="database" class="w-8 h-8 text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-blue-500 transition-colors">SQL & MongoDB</h3>
+                </div>
+                <!-- Skill 7 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-purple-500/10 transition-all">
+                        <i data-lucide="figma" class="w-8 h-8 text-slate-400 group-hover:text-purple-500 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-purple-500 transition-colors">Figma / UI Design</h3>
+                </div>
+                <!-- Skill 8 -->
+                <div class="bg-dark border border-slate-800 rounded-xl p-6 flex flex-col items-center gap-4 hover:border-primary/50 transition-colors group">
+                    <div class="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center group-hover:scale-110 group-hover:bg-orange-600/10 transition-all">
+                        <i data-lucide="git-merge" class="w-8 h-8 text-slate-400 group-hover:text-orange-600 transition-colors"></i>
+                    </div>
+                    <h3 class="font-medium text-white group-hover:text-orange-600 transition-colors">Git & GitHub</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-24 bg-dark">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">Featured <span class="text-primary">Projects</span></h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex flex-wrap justify-center gap-4 mb-12">
+                <button class="filter-btn active px-6 py-2 rounded-full border border-slate-700 text-slate-300 hover:text-white hover:border-primary transition-all text-sm font-medium" data-filter="all">All</button>
+                <button class="filter-btn px-6 py-2 rounded-full border border-slate-700 text-slate-300 hover:text-white hover:border-primary transition-all text-sm font-medium" data-filter="web">Web</button>
+                <button class="filter-btn px-6 py-2 rounded-full border border-slate-700 text-slate-300 hover:text-white hover:border-primary transition-all text-sm font-medium" data-filter="app">Apps</button>
+                <button class="filter-btn px-6 py-2 rounded-full border border-slate-700 text-slate-300 hover:text-white hover:border-primary transition-all text-sm font-medium" data-filter="design">Design</button>
+            </div>
+
+            <!-- Project Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="project-grid">
+                
+                <!-- Project 1 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="web">
+                    <div class="h-48 bg-gradient-to-br from-indigo-500 to-purple-600 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">Web Development</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">E-Commerce Platform</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">A full-stack e-commerce solution built with React, Node.js, and Stripe integration for seamless payments.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">React</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Node.js</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">MongoDB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="app">
+                    <div class="h-48 bg-gradient-to-br from-teal-400 to-emerald-600 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">Mobile App</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">Fitness Tracker</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">A cross-platform mobile application that tracks user workouts, nutrition, and provides analytics.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">React Native</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Firebase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="design">
+                    <div class="h-48 bg-gradient-to-br from-rose-400 to-orange-500 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">UI/UX Design</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">Banking Dashboard UI</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">A modern, clean, and accessible user interface design for a digital banking dashboard.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Figma</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Prototyping</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="web">
+                    <div class="h-48 bg-gradient-to-br from-sky-400 to-blue-600 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">Web Development</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">SaaS Landing Page</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">High-converting landing page optimized for speed and accessibility with dark mode support.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Next.js</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Tailwind</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 5 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="app">
+                    <div class="h-48 bg-gradient-to-br from-fuchsia-500 to-pink-600 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">Web App</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">Task Management Tool</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">A Kanban-style project management application with real-time updates and team collaboration.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Vue.js</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Supabase</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 6 -->
+                <div class="project-card bg-slate-900 rounded-2xl overflow-hidden border border-slate-800" data-category="design">
+                    <div class="h-48 bg-gradient-to-br from-amber-400 to-orange-600 relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-300"></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-dark/60 backdrop-blur-sm">
+                            <a href="#" class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white hover:scale-110 transition-transform">
+                                <i data-lucide="external-link" class="w-5 h-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-xs font-semibold text-primary mb-2 tracking-wider uppercase">UI/UX Design</div>
+                        <h3 class="text-xl font-heading font-bold text-white mb-2">Smart Home Interface</h3>
+                        <p class="text-slate-400 text-sm mb-4 line-clamp-2">Concept design for an intuitive tablet interface to control IoT smart home devices.</p>
+                        <div class="flex gap-2">
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Adobe XD</span>
+                            <span class="text-xs px-2 py-1 rounded bg-slate-800 text-slate-300">Illustrator</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-slate-900 relative overflow-hidden">
+        <!-- Decorative bg -->
+        <div class="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full filter blur-[80px]"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-heading font-bold text-white mb-4">Get In <span class="text-primary">Touch</span></h2>
+                <div class="w-20 h-1 bg-primary mx-auto rounded-full"></div>
+                <p class="text-slate-400 max-w-2xl mx-auto mt-6">Have a project in mind or just want to say hi? Feel free to reach out to me.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+                
+                <!-- Contact Info -->
+                <div class="lg:col-span-2 space-y-8">
+                    <div class="bg-dark p-6 rounded-2xl border border-slate-800 flex items-start gap-4 hover:border-slate-700 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <i data-lucide="mail" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium mb-1">Email</h4>
+                            <a href="mailto:hello@johndoe.com" class="text-slate-400 hover:text-primary transition-colors text-sm">hello@johndoe.com</a>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark p-6 rounded-2xl border border-slate-800 flex items-start gap-4 hover:border-slate-700 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <i data-lucide="map-pin" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium mb-1">Location</h4>
+                            <p class="text-slate-400 text-sm">San Francisco, California<br>United States</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark p-6 rounded-2xl border border-slate-800 flex items-start gap-4 hover:border-slate-700 transition-colors">
+                        <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <i data-lucide="share-2" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-medium mb-3">Social Profiles</h4>
+                            <div class="flex gap-3">
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all"><i data-lucide="github" class="w-5 h-5"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
+                                <a href="#" class="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all"><i data-lucide="twitter" class="w-5 h-5"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="lg:col-span-3">
+                    <form id="contact-form" class="bg-dark p-8 rounded-2xl border border-slate-800 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <label for="name" class="text-sm font-medium text-slate-400">Your Name</label>
+                                <input type="text" id="name" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-slate-600" placeholder="John Doe">
+                            </div>
+                            <div class="space-y-2">
+                                <label for="email" class="text-sm font-medium text-slate-400">Your Email</label>
+                                <input type="email" id="email" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-slate-600" placeholder="john@example.com">
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <label for="subject" class="text-sm font-medium text-slate-400">Subject</label>
+                            <input type="text" id="subject" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors placeholder:text-slate-600" placeholder="Project Inquiry">
+                        </div>
+                        <div class="space-y-2">
+                            <label for="message" class="text-sm font-medium text-slate-400">Message</label>
+                            <textarea id="message" rows="5" required class="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors resize-none placeholder:text-slate-600" placeholder="Tell me about your project..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 rounded-lg bg-primary hover:bg-sky-400 text-white font-medium transition-colors flex items-center justify-center gap-2">
+                            Send Message <i data-lucide="send" class="w-4 h-4"></i>
+                        </button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-darker border-t border-slate-800 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <p class="text-slate-500 text-sm text-center md:text-left">
+                &copy; <span id="year"></span> John Doe. All rights reserved.
+            </p>
+            <p class="text-slate-500 text-sm flex items-center gap-1">
+                Built with <i data-lucide="heart" class="w-4 h-4 text-red-500 fill-red-500"></i> using HTML, CSS & JS
+            </p>
+        </div>
+    </footer>
+
+    <!-- Custom Toast Notification (Replaces alert) -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-800 border border-slate-700 text-white px-6 py-4 rounded-lg shadow-2xl flex items-center gap-3 pointer-events-none">
+        <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
+            <i data-lucide="check" class="w-5 h-5"></i>
+        </div>
+        <div>
+            <h5 class="font-medium text-sm">Message Sent!</h5>
+            <p class="text-xs text-slate-400">I'll get back to you soon.</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Initialize Icons
+        lucide.createIcons();
+
+        // 2. Set current year in footer
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 3. Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu when clicking a link
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+            });
+        });
+
+        // 4. Navbar Background on Scroll
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('shadow-lg');
+                navbar.style.borderBottomColor = 'rgba(30, 41, 59, 1)'; // slate-800
+            } else {
+                navbar.classList.remove('shadow-lg');
+                navbar.style.borderBottomColor = 'transparent';
+            }
+        });
+
+        // 5. Active Link Highlighting on Scroll
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === #${current}) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // 6. Typing Effect
+        const words = ["Full-Stack Developer.", "UI/UX Designer.", "Problem Solver."];
+        let wordIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typewriterEl = document.getElementById("typewriter");
+        let typeSpeed = 100;
+
+        function typeEffect() {
+            const currentWord = words[wordIndex];
+            
+            if (isDeleting) {
+                typewriterEl.textContent = currentWord.substring(0, charIndex - 1);
+                charIndex--;
+                typeSpeed = 50; // faster when deleting
+            } else {
+                typewriterEl.textContent = currentWord.substring(0, charIndex + 1);
+                charIndex++;
+                typeSpeed = 100;
+            }
+
+            if (!isDeleting && charIndex === currentWord.length) {
+                isDeleting = true;
+                typeSpeed = 2000; // Pause at end of word
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                wordIndex = (wordIndex + 1) % words.length;
+                typeSpeed = 500; // Pause before new word
+            }
+
+            setTimeout(typeEffect, typeSpeed);
+        }
+        
+        // Start typing effect
+        setTimeout(typeEffect, 1000);
+
+        // 7. Project Filtering
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const projectCards = document.querySelectorAll('.project-card');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Remove active class from all buttons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                btn.classList.add('active');
+
+                const filterValue = btn.getAttribute('data-filter');
+
+                projectCards.forEach(card => {
+                    // Slight animation logic
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.95)';
+                    
+                    setTimeout(() => {
+                        if (filterValue === 'all' || card.getAttribute('data-category') === filterValue) {
+                            card.style.display = 'block';
+                            // Trigger reflow
+                            void card.offsetWidth;
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1)';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    }, 300); // Wait for fade out
+                });
+            });
+        });
+
+        // 8. Contact Form Handling
+        const contactForm = document.getElementById('contact-form');
+        const toast = document.getElementById('toast');
+
+        contactForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Prevent actual submission
+
+            // Change button state temporarily to show loading
+            const btn = contactForm.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Sending...';
+            btn.disabled = true;
+
+            // Simulate network request
+            setTimeout(() => {
+                // Show toast message instead of alert()
+                toast.classList.add('show');
+                
+                // Reset form and button
+                contactForm.reset();
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                // Hide toast after 3.5 seconds
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3500);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
